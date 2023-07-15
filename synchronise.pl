@@ -19,9 +19,18 @@ GetOptions (
     ) or die("Error in command line arguments\n");
 
 if ($hasargs == -1 || $help) {
-    print("Need arguments");
-    print "Sorry, no help.";
-    system("less","$0");
+    say "
+
+Update instances at ssh il1 and il2:
+
+synchronise --update il1 il2
+
+
+Copy back data from il1
+
+synchronise --retrieve il1
+
+";
     exit;
 };
 
