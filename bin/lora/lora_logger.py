@@ -54,9 +54,15 @@ def logwrite(string,where="log"):
         if (where == "log"):
             with open(outfile, 'a') as f:
                 f.write("date,direction,message\n")
-        
+        if (where == "csv"):
+            with open(outfile, 'a') as f:
+                f.write("date,date(node),sensor data...\n")
+                
+    prefix=""
+    if (where == "csv"):
+        prefix = datetime.now().strftime("%Y-%m-%dT%H:%M:%S%z,")
     with open(outfile, 'a') as f:
-        f.write(string+"\n")
+        f.write(prefix+string+"\n")
 
 # send a broadcast message from my_node with ID = counter
 rfm9x.send(
@@ -87,7 +93,7 @@ while True:
         print("Received (raw header):", [hex(x) for x in packet[0:4]])
         print("Received (raw payload): {0}".format(packet[4:]))
         print("Received RSSI: {0}".format(rfm9x.last_rssi))
-        date_string = datetime.now().strftime("%Y-%m-%dT%H:%M:%S%:z")
+        date_string = datetime.now().strftime("%Y-%m-%dT%H:%M:%S%z")
         logwrite(date_string+",received-header,{0}".format(packet[0:4]))
         logwrite(date_string+",received-payload,{0}".format(packet[4:]))
         logwrite(date_string+",received-RSSI,{0}".format(rfm9x.last_rssi))
