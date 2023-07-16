@@ -1,0 +1,8 @@
+{
+  "name": "zigbee manager",
+  "script": "zigbee-manager.py",
+  "instances": 1,
+  "autorestart": true,
+  "watch": false,
+  "exec_mode": "fork"
+}
