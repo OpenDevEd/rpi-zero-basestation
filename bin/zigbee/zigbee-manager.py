@@ -3,7 +3,10 @@ import json
 import csv
 import os
 from datetime import datetime
-import utils.utils as utils
+import sys
+
+sys.path.append("../utils")
+import utils
 
 
 def on_connect(client, userdata, flags, rc):
