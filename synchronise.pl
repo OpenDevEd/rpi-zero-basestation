@@ -39,10 +39,10 @@ synchronise --retrieve il1
 sub main() {
     foreach my $server (@ARGV) {
 	if ($retrieve) {
-	    system("rsync","-avz",$server. ":bin", ".");
+	    system("rsync","-avz", $server . ":bin", ".");
 	};
 	if ($update) {
-	    system("rsync","-avz","bin",$server);
+	    system("rsync","-avz", "bin", $server . ":");
 	};
     };
 };
