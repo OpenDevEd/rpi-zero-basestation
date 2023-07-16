@@ -1,6 +1,9 @@
 import os
 import csv
-import zero.template_config as template_config
+import sys
+
+sys.path.append("../")
+import config
 from datetime import datetime
 
 
@@ -56,9 +59,9 @@ def print_output(result, message, do_print, log):
 
 
 def update_csv_with_json(csv_file, additional_data):
-    path = is_log_path_time_exists_and_create(template_config.LOG_PATH)
+    path = is_log_path_time_exists_and_create(config.LOG_PATH)
     now = datetime.now()
-    csv_file = f"{path}{csv_file}-{template_config.ID}-{now.strftime('%Y-%m-%d')}-{now.hour}.csv"
+    csv_file = f"{path}{csv_file}-{config.ID}-{now.strftime('%Y-%m-%d')}-{now.hour}.csv"
     existing_data = []
     updated_data = []
     if os.path.isfile(csv_file):

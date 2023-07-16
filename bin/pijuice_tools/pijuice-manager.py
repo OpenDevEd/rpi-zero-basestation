@@ -1,7 +1,12 @@
 import time
 from pijuice import PiJuice
-import utils.utils as utils
-import template_config
+import sys
+
+sys.path.append("../utils")
+sys.path.append("../")
+import utils
+
+import config
 
 pijuice = PiJuice()
 
@@ -160,10 +165,10 @@ def check_battery():
     # get battery level using get_battery_level function
     result = get_battery_level(pijuice, False, False)
     # if the battery level is less than 20% send an alert
-    if result < template_config.BATTERY_TO_ALERT:
+    if result < config.BATTERY_TO_ALERT:
         send_alerts("battery level is less than 20%")
     # if the battery level is less than 10% go to sleep
-    if result < template_config.BATTERY_TO_SLEEP:
+    if result < config.BATTERY_TO_SLEEP:
         send_alerts("battery level is less than 10 percent and going to sleep")
         go_to_sleep()
 
@@ -186,9 +191,9 @@ def check_charging():
 
 def check_temperature():
     result = get_battery_temperature(pijuice, False, False)
-    if result > template_config.TEMPERATURE_TO_ALERT:
+    if result > config.TEMPERATURE_TO_ALERT:
         send_alerts("battery temperature is too high")
-    if result > template_config.TEMPERATURE_TO_SLEEP:
+    if result > config.TEMPERATURE_TO_SLEEP:
         send_alerts("battery temperature is too high and going to sleep")
         go_to_sleep()
 
