@@ -62,17 +62,24 @@ if len(sys.argv)<2:
 
 if sys.argv[1] == "halt":
     print("Shutting down now. Disconnecting power in 60 seconds.")
+    #pijuice.status.SetLedBlink('D2', 60, [200,0,0], 500, [0, 0, 0], 500)
     turn_off_pijuice(60)
     turn_off_pi()
 elif sys.argv[1] == "reboot":
     print("Restarting in approx 70 seconds...")
+    #pijuice.status.SetLedBlink('D2', 70, [0,200,200], 200, [0, 0, 0], 800)
     set_wakeup_in_x_sec(70)
     turn_off_pijuice(60)
     turn_off_pi()
 elif sys.argv[1] == "poff":
     print("Pulling power in 200 seconds...")
+    #pijuice.status.SetLedBlink('D2', 200, [200,0,0], 500, [0, 0, 0], 500)
     turn_off_pijuice(200)
 elif sys.argv[1] == "reset":
+    reset_to_defaults()
+elif sys.argv[1] == "resetonboot":
+    #pijuice.status.SetLedBlink('D2', 20, [200,0,200], 250, [0, 0, 0], 250)
+    time.sleep(10)
     reset_to_defaults()
 elif sys.argv[1] == "show":
     show_alarm()
