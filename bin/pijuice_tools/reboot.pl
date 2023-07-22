@@ -21,16 +21,13 @@ GetOptions (
 &main();
 
 sub main() {
-    my $uptime = `uptime -p`;
-    if ($uptime =~ m/(\d+) minutes/) {
-	say "$1 minutes";
-	if ($1 < 5) {
-	    system("/usr/bin/python3 /home/ilce/bin/pijuice_tools/reboot.py reset");
-	};
+    my $uptime = `cat /proc/uptime`;
+    $uptime =~ s/ .*//;    
+    if ($uptime < 5 * 60) {
+	system("/usr/bin/python3 /home/ilce/bin/pijuice_tools/reboot.py reset");
     };
 };
-
-
+ 
 __END__
     #use String::ShellQuote; $string = shell_quote(@list);
     #use Data::Dumper;

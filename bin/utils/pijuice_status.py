@@ -1,43 +1,31 @@
 #!/usr/bin/python3
+# https://github.com/PiSupply/PiJuice/tree/master/Software
+import json
 from pijuice import PiJuice # Import pijuice module
 pijuice = PiJuice(1, 0x14) # Instantiate PiJuice interface object
-print("{");
-print("\"status.GetStatus\":");
-print(pijuice.status.GetStatus()) # Read PiJuice status.
-print(", \"status.chargeLevel\":");
-print(pijuice.status.GetChargeLevel());
-print(", \"status.faultStatus\":");
-print(pijuice.status.GetFaultStatus());
-print(", \"status.batteryTemperature\":");
-print(pijuice.status.GetBatteryTemperature());
-print(", \"status.batteryVoltage\":");
-print(pijuice.status.GetBatteryVoltage());
-print(", \"status.batteryCurrent\":");
-print(pijuice.status.GetBatteryCurrent());
-print(", \"status.ioVoltage\":");
-print(pijuice.status.GetIoVoltage());
-print(", \"status.ioCurrent\":");
-print(pijuice.status.GetIoCurrent());
-print(", \"rtcAlarm.controlStatus\":");
-print(pijuice.rtcAlarm.GetControlStatus());
-print(", \"rtcAlarm.time\":");
-print(pijuice.rtcAlarm.GetTime() );
-print(", \"rtcAlarm.alarm\":");
-print(pijuice.rtcAlarm.GetAlarm() );
-print(", \"power.powerOFf\":");
-print(pijuice.power.GetPowerOff());
-print(", \"power.wakeUpOnCharge\":");
-print(pijuice.power.GetWakeUpOnCharge() );
-print(", \"power.watchdog\":");
-print(pijuice.power.GetWatchdog() );
-print(", \"power.systemPowerSwitch\":");
-print(pijuice.power.GetSystemPowerSwitch() );
-print(", \"config.chargingConfig\":");
-print(pijuice.config.GetChargingConfig());
-print(", \"config.batteryProfileStatus\":");
-print(pijuice.config.GetBatteryProfileStatus() );
-print(", \"config.batteryProfile\":");
-print(pijuice.config.GetBatteryProfile());
-print(", \"config.batteryTempSenseConfig\":");
-print(pijuice.config.GetBatteryTempSenseConfig());
-print("}");
+# create new object
+# create object to read PiJuice status 
+pij = {}
+pij["status"] = pijuice.status.GetStatus() # Read PiJuice status.
+pij["status.faultStatus"] = pijuice.status.GetFaultStatus()
+pij["status.chargeLevel"] = pijuice.status.GetChargeLevel()
+pij["status.batteryVoltage"] = pijuice.status.GetBatteryVoltage()
+pij["status.batteryTemperature"] = pijuice.status.GetBatteryTemperature()
+pij["status.batteryCurrent"] = pijuice.status.GetBatteryCurrent()
+pij["status.ioVoltage"] = pijuice.status.GetIoVoltage()
+pij["status.ioCurrent"] = pijuice.status.GetIoCurrent()
+pij["rtcAlarm.controlStatus"] = pijuice.rtcAlarm.GetControlStatus()
+pij["rtcAlarm.time"] = pijuice.rtcAlarm.GetTime()
+pij["rtcAlarm.alarm"] = pijuice.rtcAlarm.GetAlarm()
+pij["power.powerOff"] = pijuice.power.GetPowerOff()
+pij["power.wakeUpOnCharge"] = pijuice.power.GetWakeUpOnCharge()
+pij["power.watchdog"] = pijuice.power.GetWatchdog()
+pij["power.systemPowerSwitch"] = pijuice.power.GetSystemPowerSwitch()
+pij["config.chargingConfig"] = pijuice.config.GetChargingConfig()
+pij["config.batteryProfileStatus"] = pijuice.config.GetBatteryProfileStatus()
+pij["config.batteryProfile"] = pijuice.config.GetBatteryProfile()
+pij["config.batteryTempSenseConfig"] = pijuice.config.GetBatteryTempSenseConfig()
+
+# convert pij to json
+print(json.dumps(pij))
+

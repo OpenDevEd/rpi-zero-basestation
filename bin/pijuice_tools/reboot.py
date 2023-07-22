@@ -19,13 +19,9 @@ def show_alarm():
 def set_wakeup_in_x_sec(x):
     #print(pijuice.rtcAlarm.GetAlarm());
     #SetAlarm({'second': 0, 'minute': 0, 'hour': 'EVERY_HOUR', 'day': 'EVERY_DAY'})
-
     date = datetime.now() + timedelta(seconds=x)
-
     print('setting wakeup at : ',date.strftime("%Y-%m-%d, %H:%M:%S, %z"))
-
     arr = {'second': date.second, 'minute': date.minute, 'hour': 'EVERY_HOUR', 'day': 'EVERY_DAY'}
-
     pijuice.rtcAlarm.SetWakeupEnabled(True)
     pijuice.rtcAlarm.SetAlarm(arr)
 
@@ -42,9 +38,6 @@ def turn_off_pijuice(time):
     pijuice.power.SetPowerOff(
         time
     )  # Send command to PiJuice to shut down the Raspberry Pi
-
-
-
 
 # turn off the pi zero
 def turn_off_pi():
