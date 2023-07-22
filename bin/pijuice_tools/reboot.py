@@ -4,6 +4,12 @@ from pijuice import PiJuice # Import pijuice module
 import os
 import sys
 from datetime import datetime , timedelta
+import time
+
+# Since the start is very early in the boot sequence we wait for the i2c-1 device
+while not os.path.exists('/dev/i2c-1'):
+    time.sleep(0.1)
+
 pijuice = PiJuice(1, 0x14) # Instantiate PiJuice interface object
 
 def show_alarm():
