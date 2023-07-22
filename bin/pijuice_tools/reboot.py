@@ -22,7 +22,7 @@ def set_wakeup_in_x_sec(x):
 
     date = datetime.now() + timedelta(seconds=x)
 
-    print('setting wakeup at : ',date.isoformat)
+    print('setting wakeup at : ',date.strftime("%Y-%m-%d, %H:%M:%S, %z"))
 
     arr = {'second': date.second, 'minute': date.minute, 'hour': 'EVERY_HOUR', 'day': 'EVERY_DAY'}
 
