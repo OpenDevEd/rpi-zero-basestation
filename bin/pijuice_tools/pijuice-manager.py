@@ -143,16 +143,13 @@ def get_all(do_print=True, log=False):
         pijuice, do_print, log
     )
     result["fault_status"] = get_fault_status(pijuice, do_print, log)
-    utils.update_csv_with_json("pijuice", result)
+    utils.update_csv_with_json("battery", result)
 
 
 # wrrite function to send alerts
 def send_alerts(alert_message):
     # TODO: send alerts to somewhere
     print(f"send alert: {alert_message}")
-
-
-# write function to go to sleep
 
 
 def go_to_sleep():
@@ -174,8 +171,6 @@ def check_battery():
 
 
 # write function to check if the battery is charging
-
-
 def check_charging():
     # TODO: check if the battery is charging
     is_charging = True

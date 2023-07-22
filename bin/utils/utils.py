@@ -1,10 +1,14 @@
 import os
 import csv
 import sys
+import os
+import pathlib
+import json
 
 sys.path.append("../")
 import config
-from datetime import datetime
+from datetime import datetime, timezone
+import requests
 
 
 def is_folder_exists_and_create(folder):
@@ -61,19 +65,29 @@ def print_output(result, message, do_print, log):
 def update_csv_with_json(csv_file, additional_data):
     path = is_log_path_time_exists_and_create(config.LOG_PATH)
     now = datetime.now()
-    csv_file = f"{path}{csv_file}-{config.ID}-{now.strftime('%Y-%m-%d')}-{now.hour}.csv"
+    csv_file = f"{path}{csv_file}-{config.ID}_{now.strftime('%Y-%m-%d')}_{now.hour}.csv"
     existing_data = []
     updated_data = []
+
     if os.path.isfile(csv_file):
         with open(csv_file, "r") as file:
             reader = csv.DictReader(file)
             existing_data = list(reader)
+            # check if the file is empty
+
     if type(additional_data) == list:
         for row in additional_data:
-            row["time_created"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            # convert datetime to iso-8601 format with timezone 2023-07-08T22:02:40+01:00 not 2023-07-19T14:27:04.096051+00:00
+            # change z for +00:00
+            dt = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+            dt = dt[:-2] + ":" + dt[-2:]
+            row["time_created"] = dt
+
         updated_data = existing_data + additional_data
     elif type(additional_data) == dict:
-        additional_data["time_created"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        dt = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+        dt = dt[:-2] + ":" + dt[-2:]
+        additional_data["time_created"] = dt
         updated_data = existing_data
         updated_data.append(additional_data)
 
@@ -107,3 +121,57 @@ def update_csv_with_json(csv_file, additional_data):
     print(
         f"CSV file '{csv_file}' updated successfully at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} !"
     )
+
+
+def get_all_subfolders(path, extention=""):
+    subfolders = []
+    files = []
+    try:
+        for f in os.scandir(path):
+            if f.is_dir():
+                subfolders.append(f.path)
+                res = get_all_subfolders(f.path)
+                subfolders.extend(res[0])
+                files.extend(res[1])
+            else:
+                if pathlib.Path(f.path).suffix == extention or extention == "":
+                    files.append(f.path)
+    except PermissionError:
+        pass
+    except:
+        pass
+    # return subfolders and files
+    return [subfolders, files]
+
+
+def upload_file_to_api(url, file_path):
+    # Open the file and read its contents
+    with open(file_path, "rb") as file:
+        file_contents = file.read()
+    # Set the request headers
+    # Convert the bytes object to a string
+    file_path = file_path.replace(config.LOG_PATH, "logs")
+    file_contents_str = file_contents.decode("utf-8")
+
+    # Set the request headers
+    headers = {"Content-Type": "application/json"}
+    body = json.dumps({"fileName": file_path, "body": file_contents_str})
+
+    # Send the file contents in the request body
+    response = requests.post(url, headers=headers, data=body)
+
+    # Check the response status code
+    if response.status_code == 200:
+        print(response.text)
+        print("File uploaded successfully.")
+    else:
+        print(f"Error uploading file: {response.text}")
+
+
+def upload_logs_files_to_api(url, folder_path):
+    # get all files in the folder
+    files = get_all_subfolders(folder_path)[1]
+
+    # loop through the files and upload them
+    for file in files:
+        upload_file_to_api(url, file)
