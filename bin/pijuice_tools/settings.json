@@ -1,6 +1,6 @@
 {
-    "default_hour": 12,
-    "default_minute": 46,
+    "default_hour": 13,
+    "default_minute": 45,
     "default_lowpower_shutoff": 80,
     "default_chargelevel_turnon": 85
 }

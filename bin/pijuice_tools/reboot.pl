@@ -67,8 +67,8 @@ sub main() {
     my $uptime = `cat /proc/uptime`;
     $uptime =~ s/ .*//;
     if ( $uptime < 5 * 60 || $force ) {
-
-# We are within 5 minutes of boot. Make sure that the wakeup alam and battery is set properly.
+        # We are within 5 minutes of boot. Make sure that the wakeup alam and battery is set properly.
+        # If you need to set 
         my $target =
 "Alarm:  {'second': 0, 'minute': $wakeminute, 'hour': $wakehour, 'day': 'EVERY_DAY'}
 Controlstatus:  {'alarm_wakeup_enabled': True, 'alarm_flag': True}
@@ -78,22 +78,36 @@ Controlstatus:  {'alarm_wakeup_enabled': True, 'alarm_flag': True}
             say $alarm;
             say $target;
             system(
-"/usr/bin/python3 /home/ilce/bin/pijuice_tools/reboot.py reset $wakehour $wakeminute $settings{default_lowpower_shutoff} $settings{default_chargelevel_turnon}"
+"/usr/bin/python3 /home/ilce/bin/pijuice_tools/reboot.py reset"
             );
-            make_entry("reboot.pl: Setting up alarm/battery.");
+#            system(
+#"/usr/bin/python3 /home/ilce/bin/pijuice_tools/reboot.py reset $wakehour $wakeminute $settings{default_lowpower_shutoff} $settings{default_chargelevel_turnon}"
+#            );
+            make_entry("reboot.pl: Setting up alarm / battery.");
         }
         else {
-            say "reboot.pl: Alarm set properly.";
-            make_entry("reboot.pl: Alarm set properly/battery.");
+            say "reboot.pl: Alarm set properly / battery set up properly.";
+            make_entry("reboot.pl: Alarm set properly / battery set up properly.");
         }
     }
+
     my $minutes = 15;
     print "reboot.pl: Within $minutes minutes of boot?";
-    if ( $uptime < $minutes * 60 || $force2 ) {
+    if ( $uptime < $minutes * 60 && !$force2 ) {
         say "Yes.";
         make_entry(
 "reboot.pl: We're witin $minutes minutes of boot. Will not shut down due to low battery."
         );
+        my $lowpower =
+          `/usr/bin/python3 /home/ilce/bin/pijuice_tools/reboot.py lowbatterytest`;
+        if ( $lowpower =~ m/lowpowercondition\=(\w+)/ ) {
+            say "reboot.pl: Low power condition = $1";
+            make_entry("reboot.pl: Low power condition $1.");
+        }
+        else {
+            make_entry(
+                "reboot.pl: ERROR - could not determine low power condition.");
+        }
 
 # THis own't work due to the fact that we need utc.
 #        print "Are we between $hour:00 and $hour:15? ";
@@ -108,8 +122,7 @@ Controlstatus:  {'alarm_wakeup_enabled': True, 'alarm_flag': True}
 #        else {
 #            say "No.";
 #        }
-    }
-    if ( $uptime > 5 * 60 || $force2 ) {
+    } else {
         say "No.";
 
       # We're outside of 15 minutes of boot, so we will now shut down if needed.

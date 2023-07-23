@@ -55,7 +55,8 @@ def reset_to_defaults(hour=default_hour, minute=default_minute):
     myalarm['minute'] = minute
     pijuice.rtcAlarm.SetAlarm(myalarm)
     pijuice.power.SetPowerOff(-1)
-    # Wakeup on charge at 50%
+    print("rtcAlarm.GetAlarm="+str(pijuice.rtcAlarm.GetAlarm()))
+
 
 # time is in seconds
 def turn_off_pijuice(time):
@@ -102,7 +103,7 @@ if sys.argv[1] == "halt":
     reset_to_defaults()
     turn_off_pijuice(60)
     turn_off_pi()
-if sys.argv[1] == "lowbattery" or sys.argv[1] == "lowpower":
+if sys.argv[1] == "lowbattery" or sys.argv[1] == "lowpower" or sys.argv[1] == "lowbatterytest" or sys.argv[1] == "lowpowertest":
     if len(sys.argv) >= 3:
         print("Setting low power threshold to: "+str(sys.argv[2]))
         lowpower_shutoff = int(sys.argv[2])
@@ -112,13 +113,15 @@ if sys.argv[1] == "lowbattery" or sys.argv[1] == "lowpower":
         chargelevel_turnon = int(sys.argv[3])
     else:
         chargelevel_turnon = default_chargelevel_turnon
-    if lowpower(lowpower_shutoff, chargelevel_turnon):
-        print("Low power: Shutting down now. Disconnecting power in 60 seconds. Scheduled wakeup only. Charge wakeup enabled.")
-        reset_to_defaults()
-        turn_off_pijuice(60)
-        turn_off_pi()
-    else: 
-        print("Power level ok, not doing anything.")
+    indicator = lowpower(lowpower_shutoff, chargelevel_turnon)
+    if sys.argv[1] == "lowbattery" or sys.argv[1] == "lowpower":
+        if indicator == True:  
+            print("Low power: Shutting down now. Disconnecting power in 60 seconds. Scheduled wakeup only. Charge wakeup enabled.")
+            reset_to_defaults()
+            turn_off_pijuice(60)
+            turn_off_pi()
+        else: 
+            print("Power level ok, not doing anything.")
 elif sys.argv[1] == "reboot":
     print("Restarting in approx 70 seconds...")
     #pijuice.status.SetLedBlink('D2', 70, [0,200,200], 200, [0, 0, 0], 800)
