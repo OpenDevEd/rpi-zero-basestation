@@ -16,45 +16,49 @@ my $help    = "";
 my $string  = "";
 my $set     = "";
 use Getopt::Long;
-my $force = "";
+my $force  = "";
 my $force2 = "";
 GetOptions(
     "string=s" => \$string,
     "help"     => \$help,
     "set"      => \$set,
-    "force" => \$force,
-    "force2" => \$force2,
-    ) or die("Error in command line arguments\n");
+    "force"    => \$force,
+    "force2"   => \$force2,
+) or die("Error in command line arguments\n");
 
-
-my %settings = %{from_json(`cat /home/ilce/bin/pijuice_tools/settings.json`)};
+my %settings = %{ from_json(`cat /home/ilce/bin/pijuice_tools/settings.json`) };
 
 if ($set) {
 
     # For testing...
     if ( !$hasargs ) {
         say
-"Usage: $0 --set hour_for_wakeup minute_forwakeup battery_threshold_for_shutdown battery_threshold_for_turnon";
-say "Current settings:";
-say `/usr/bin/python3 /home/ilce/bin/pijuice_tools/reboot.py show`;    
+"Usage: $0 --set hour_for_wakeup minute_forwakeup battery_threshold_for_shutdown battery_threshold_for_turnon
+
+Remember that times need to be set in UTC.
+";
+        say "Current settings:";
+        say `/usr/bin/python3 /home/ilce/bin/pijuice_tools/reboot.py show`;
 
     }
     else {
         system
-"/usr/bin/python3 /home/ilce/bin/pijuice_tools/reboot.py reset $ARGV[0] $ARGV[1] $ARGV[2] $ARGV[3]";    
-system "/usr/bin/python3 /home/ilce/bin/pijuice_tools/reboot.py lowbattery $ARGV[2] $ARGV[3]";    
-system "/usr/bin/python3 /home/ilce/bin/pijuice_tools/reboot.py show";    
-    say "reboot.pl: If you have crontab set up, the above settings might be overridden if you run them near a crontab job execution.";
-    say `date`;
-    };
+"/usr/bin/python3 /home/ilce/bin/pijuice_tools/reboot.py reset $ARGV[0] $ARGV[1] $ARGV[2] $ARGV[3]";
+        system
+"/usr/bin/python3 /home/ilce/bin/pijuice_tools/reboot.py lowbattery $ARGV[2] $ARGV[3]";
+        system "/usr/bin/python3 /home/ilce/bin/pijuice_tools/reboot.py show";
+        say
+"reboot.pl: If you have crontab set up, the above settings might be overridden if you run them near a crontab job execution.";
+        say `date`;
+    }
     exit;
 }
 
-my $wakehour = $settings{"default_hour"};
+my $wakehour   = $settings{"default_hour"};
 my $wakeminute = $settings{"default_minute"};
-my $padhour  = $wakehour;
+my $padhour    = $wakehour;
 my $padminute  = $wakeminute;
-if ( length($padhour) < 2 ) { $padhour = "0$padhour"; }
+if ( length($padhour) < 2 )   { $padhour   = "0$padhour"; }
 if ( length($padminute) < 2 ) { $padminute = "0$padminute"; }
 
 &main();
@@ -62,7 +66,8 @@ if ( length($padminute) < 2 ) { $padminute = "0$padminute"; }
 sub main() {
     my $uptime = `cat /proc/uptime`;
     $uptime =~ s/ .*//;
-    if ( $uptime < 5 * 60 || $force) {
+    if ( $uptime < 5 * 60 || $force ) {
+
 # We are within 5 minutes of boot. Make sure that the wakeup alam and battery is set properly.
         my $target =
 "Alarm:  {'second': 0, 'minute': $wakeminute, 'hour': $wakehour, 'day': 'EVERY_DAY'}
@@ -84,26 +89,29 @@ Controlstatus:  {'alarm_wakeup_enabled': True, 'alarm_flag': True}
     }
     my $minutes = 15;
     print "reboot.pl: Within $minutes minutes of boot?";
-    if ( $uptime < $minutes * 60 || $force2) {
+    if ( $uptime < $minutes * 60 || $force2 ) {
         say "Yes.";
         make_entry(
 "reboot.pl: We're witin $minutes minutes of boot. Will not shut down due to low battery."
         );
-        print "Are we between $hour:00 and $hour:15? ";
-        if ( $hour eq $padhour ) {
-            say "Yes.";
+
+# THis own't work due to the fact that we need utc.
+#        print "Are we between $hour:00 and $hour:15? ";
+#        if ( $hour eq $padhour ) {
+#            say "Yes.";
 #            if ( $uptime < 5 * 60 ) {
 #                make_entry(
 #"reboot.pl: Woken up just after $padhour:00; not applying low power condition until $padhour:$minutes"
 #                );
 #            }
-        }
-        else {
-            say "No.";
-        }
+#        }
+#        else {
+#            say "No.";
+#        }
     }
-    else {
+    if ( $uptime > 5 * 60 || $force2 ) {
         say "No.";
+
       # We're outside of 15 minutes of boot, so we will now shut down if needed.
         my $lowpower =
           `/usr/bin/python3 /home/ilce/bin/pijuice_tools/reboot.py lowbattery`;
@@ -120,7 +128,7 @@ Controlstatus:  {'alarm_wakeup_enabled': True, 'alarm_flag': True}
     }
 }
 
-sub make_entry($text) {
+sub make_entry ($text) {
     chomp( my $path = `date +'%Y-%m-%d/%H'` );
     print "$path\n";
     my $location = $home . "/logs/" . $path;
