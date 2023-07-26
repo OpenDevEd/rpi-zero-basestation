@@ -29,6 +29,7 @@ with open('/home/ilce/bin/pijuice_tools/settings.json', 'r') as f:
     default_minute = settings['default_minute']
     default_chargelevel_turnon = settings['default_chargelevel_turnon']
     default_lowpower_shutoff = settings['default_lowpower_shutoff']
+    default_watchdog_min = settings['default_watchdog_min']
 
 default_alarm =  {'second': 0, 'minute': default_minute, 'hour': default_hour, 'day': 'EVERY_DAY'}
 
@@ -195,10 +196,22 @@ def reset_to_defaults_wrapper():
         chargelevel_turnon = default_chargelevel_turnon
         if len(sys.argv) >= 6:
             chargelevel_turnon = int(sys.argv[5])
+        watchdog_min = default_watchdog_min
+        if len(sys.argv) >= 7:
+            watchdog_min = int(sys.argv[6])
         reset_to_defaults(hour, minute)
-        lowpower(lowpower_shutoff, chargelevel_turnon)
+        lowpower(lowpower_shutoff, chargelevel_turnon)     
+        setwd(watchdog_min)
     except:
         write_to_log("An exception occurred in reset_to_defaults_wrapper()")
+
+def getwd():
+    wd = pijuice.power.GetWatchdog()
+    write_to_log(str(wd))
+
+def setwd(value):
+    write_to_log(str(pijuice.power.SetWatchdog(value, non_volatile = True)))
+    getwd()
 
 if sys.argv[1] == "halt":
     print("Shutting down now. Disconnecting power in 60 seconds. Scheduled wakeup only.")
@@ -246,6 +259,13 @@ elif sys.argv[1] == "show":
     show_properties()
 elif sys.argv[1] == "bootactions":
     actions_after_boot()
+elif sys.argv[1] == "getwd":
+    getwd()
+elif sys.argv[1] == "setwd":
+    if len(sys.argv) >= 2:
+        write_to_log("Setting watchdog to "+sys.argv[2]+" min")
+        setwd(int(sys.argv[2]))
+    else:  
+        print("Need argument.")
 else:
     print("Specify halt or reboot or reset or lowbattery or cron")
-

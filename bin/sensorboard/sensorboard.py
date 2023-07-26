@@ -50,6 +50,7 @@ i2c = board.I2C()  # uses board.SCL and board.SDA
 # i2c = board.STEMMA_I2C()  # For using the built-in STEMMA QT connector on a microcontroller
 if (settings['scd4x']):
     scd4x = adafruit_scd4x.SCD4X(i2c)
+    write_to_log("scd4x: Serial number:" + str( [hex(i) for i in scd4x.serial_number]) )
     scd4x.start_periodic_measurement()
     write_to_log("scd4x: Waiting for first measurement....")
 
@@ -68,7 +69,6 @@ while True:
     if (settings['bh1750']):
         write_to_log("bh1750: Light=%0.2f lux" % bh1750.lux)
     if settings['scd4x'] and scd4x.data_ready:
-        write_to_log("scd4x: Serial number=" + str( [hex(i) for i in scd4x.serial_number]) )
         write_to_log("scd4x: CO2=%d ppm" % scd4x.CO2)
         write_to_log("scd4x: Temperature=%0.2f *C" % scd4x.temperature)
         write_to_log("scd4x: Humidity=%0.2f %%" % scd4x.relative_humidity)

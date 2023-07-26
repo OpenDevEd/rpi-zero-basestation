@@ -2,5 +2,6 @@
     "default_hour": 12,
     "default_minute": 0,
     "default_lowpower_shutoff": 20,
-    "default_chargelevel_turnon": 40
+    "default_chargelevel_turnon": 40,
+    "default_watchdog_min": 4
 }
