@@ -1,7 +1,10 @@
 *~
 BaCkUp
+<<<<<<< HEAD
 __pycache__
 BaCkUpTaRgZ
+=======
+>>>>>>> parent of 219df46 (Update)
 
 !Build/
 .last_cover_stats
@@ -11,7 +14,7 @@ BaCkUpTaRgZ
 *.o
 *.pm.tdy
 *.bs
-
+GSM/
 
 # Devel::Cover
 cover_db/
