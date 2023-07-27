@@ -3,7 +3,6 @@ from digitalio import DigitalInOut, Direction, Pull
 import busio
 import time
 
-print("Hello World on Pi Zero!")
 # print(dir(board))
 
 # Simple example to send a message and then wait indefinitely for messages
@@ -19,7 +18,9 @@ RADIO_FREQ_MHZ = 433.0  # Frequency of the radio in Mhz. Must match your
 # module! Can be a value like 915.0, 433.0, etc.
 
 # Define pins connected to the chip, use these if wiring up the breakout according to the guide:
-CS = DigitalInOut(board.CE1)  # do not use CE0 and CE1, see: https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/spi-sensors-devices
+CS = DigitalInOut(
+    board.CE1
+)  # do not use CE0 and CE1, see: https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/spi-sensors-devices
 RESET = DigitalInOut(board.D25)
 spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
 
@@ -29,9 +30,9 @@ rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, RADIO_FREQ_MHZ, baudrate=100000)
 # set node addresses
 rfm9x.node = 100
 rfm9x.destination = 1
-#On Pico:
-#NODE_ADDRESS = 1
-#BASE_STATION_ADDRESS = 100 
+# On Pico:
+# NODE_ADDRESS = 1
+# BASE_STATION_ADDRESS = 100
 # initialize counter
 counter = 0
 # send a broadcast message from my_node with ID = counter
