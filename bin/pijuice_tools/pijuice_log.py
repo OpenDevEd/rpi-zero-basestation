@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 #
+# Script adapted by Open Development & Education, https://opendeved.net 
+# Original script:
 # Author: Milan Neskovic, Pi Supply, 2021, https://github.com/mmilann
 
 # This program is distributed in the hope that it will be useful,
@@ -19,6 +21,7 @@
 
 from pijuice import PiJuice, PiJuiceInterface
 import time, datetime, sys
+import re 
 
 LOGGING_CMD = 0xF6 #246
 LOG_MSG_FRAME_SIZE = 31
@@ -258,12 +261,22 @@ def GetPiJuiceLog(ifs):
 			  
 			s = LOG_MSG_DEFS[ret['data'][1]]['parser'](ret['data'])
 			logStrOut.insert(0,s)
-			#print(s)
-
+			x = re.search("^([^\,]+?)\,", s)
+			filename = x.group(1)
+			# Write out messages to the overall log... 
+			#with open(path+"/"+filename+".txt", "a") as f:
+        	#	f.write(s+"\n")
 			time.sleep(0.01)
 		else: #elif ret['error'] == 'COMMUNICATION_ERROR':
 			print(ret)
 			return ret
+
+if '--help' in sys.argv:
+	print("Use to read log messages from PiJuice, firmware version >= 1.6.\nIf there is file path as input argument it will append messages to file, otherwise will only print to screen.")
+	print("Enable: python3 pijuice_log.py --enable \"OTHER|5VREG_ON|5VREG_OFF|WAKEUP_EVT|ALARM_EVT|MCU_RESET\"")
+	print("Read: python3 pijuice_log.py")
+	print("Read to file: python3 pijuice_log.py ./pijuice_log.txt")
+	print("Disable logging: python3 pijuice_log.py --disable")
 
 if '--enable' in sys.argv:
 	ci = sys.argv.index('--enable')+1
