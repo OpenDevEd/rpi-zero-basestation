@@ -1,10 +1,10 @@
 *~
 BaCkUp
-<<<<<<< HEAD
+
 __pycache__
 BaCkUpTaRgZ
-=======
->>>>>>> parent of 219df46 (Update)
+config.py
+
 
 !Build/
 .last_cover_stats
