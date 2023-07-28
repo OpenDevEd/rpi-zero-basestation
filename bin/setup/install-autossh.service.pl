@@ -17,7 +17,7 @@ if (!-e "/usr/bin/autossh") {
     print "autossh installed.\n";
 };
 
-my $text = `cat autossh.service`;
+my $text = `cat install-autossh.service.txt`;
 
 chomp(my $host = `hostname`);
 
