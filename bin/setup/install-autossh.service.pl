@@ -4,14 +4,18 @@ use warnings; use strict; use utf8;
 my $login = (getpwuid $>);
 die "must run as root" if $login ne 'root';
 
-chomp(my $remotehost = `ssh root@157.245.35.62 "hostname"`);
+chomp(my $remotehost = `sudo -u ilce ssh root\@157.245.35.62 "hostname"`);
 if ($remotehost eq "ssh-tunnel-exchange-point") {
-} else {
-    print("This will only work if you have the ssh keys exchanged properly. Check your keys.");
+} else {    
+    print("$remotehost This will only work if you have the ssh keys exchanged properly. Check your keys.");
     exit;
 };
 
-system("sudo apt install autossh");
+if (!-e "/usr/bin/autossh") {
+    system("sudo apt install autossh");
+} else {
+    print "autossh installed.\n";
+};
 
 my $text = `cat autossh.service`;
 
