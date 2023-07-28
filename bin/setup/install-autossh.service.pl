@@ -1,10 +1,19 @@
 #!/usr/bin/perl
 use warnings; use strict; use utf8;
-use File::Slurper qw(read_text read_lines write_text);
 
-print("Run with sudo\n");
+my $login = (getpwuid $>);
+die "must run as root" if $login ne 'root';
+
+chomp($remotehost = `ssh root@157.245.35.62 "hostname"`);
+if ($remotehost eq "ssh-tunnel-exchange-point") {
+} else {
+    print("This will only work if you have the ssh keys exchanged properly. Check your keys.");
+    exit;
+};
+
 system("sudo apt install autossh");
-my $text = read_text("autossh.service");
+
+my $text = `cat autossh.service`;
 
 chomp(my $host = `hostname`);
 
