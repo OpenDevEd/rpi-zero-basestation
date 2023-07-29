@@ -1,10 +1,9 @@
 *~
 BaCkUp
-<<<<<<< HEAD
-__pycache__
 BaCkUpTaRgZ
-=======
->>>>>>> parent of 219df46 (Update)
+__pycache__
+bin/sensorboard/settings.json
+
 
 !Build/
 .last_cover_stats
