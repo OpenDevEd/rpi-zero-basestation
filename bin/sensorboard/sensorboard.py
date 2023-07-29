@@ -10,6 +10,8 @@ import adafruit_bh1750
 import adafruit_scd4x
 from pms5003 import PMS5003
 from pmdata import pmdata
+import adafruit_ens160
+
 
 # get uptime of linux system
 def get_uptime():
@@ -73,6 +75,8 @@ if (settings["pm"]):
         pin_reset=27
     )
     
+if (settings["ens160"]):
+    ens = adafruit_ens160.ENS160(i2c)
 
 try:
     while True:
@@ -88,6 +92,18 @@ try:
         if (settings["pm"]):
             data = pms5003.read()
             write_to_log("pm: "+str(pmdata(data)))
+
+        if (settings["ens160"]):
+            if (settings['ahtx0']):
+                ens.temperature_compensation  = ahtx0.temperature
+                ens.humidity_compensation = ahtx0.relative_humidity
+            else:  
+                ens.temperature_compensation = 25
+                ens.humidity_compensation = 50
+            print("AQI (1-5):", ens.AQI)
+            print("TVOC (ppb):", ens.TVOC)
+            print("eCO2 (ppm):", ens.eCO2)
+            print()
 
         time.sleep(60)
 
