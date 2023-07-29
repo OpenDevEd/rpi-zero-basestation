@@ -1,4 +1,5 @@
 import json
+import shutil
 from pijuice import PiJuice # Import pijuice module
 import os
 import sys
@@ -46,6 +47,12 @@ def write_to_log(text):
         f.write(printstr+"\n")
     print(printstr)
 
+# if settings.json does not exist, copy settings_template.json to settings.json
+if not os.path.isfile('/home/ilce/bin/sensorboard/settings.json'):
+    print("Copying settings_template.json to settings.json")
+    print("Please configure your sensors as needed.")
+    shutil.copyfile('/home/ilce/bin/sensorboard/settings_template.json', '/home/ilce/bin/sensorboard/settings.json')
+
 # read default_hour, default_minute, default_chargelevel_turnon, default_lowpower_shutoff from json file
 with open('/home/ilce/bin/sensorboard/settings.json', 'r') as f:
     settings = json.load(f)
@@ -81,14 +88,14 @@ if (settings["ens160"]):
 try:
     while True:
         if (settings['ahtx0']):
-            write_to_log("ahtx0: Temperature=%0.2f *C" % ahtx0.temperature)
-            write_to_log("ahtx0: Humidity=%0.2f %%" % ahtx0.relative_humidity)
+            write_to_log("ahtx0: Temperature (*C)=%0.2f" % ahtx0.temperature)
+            write_to_log("ahtx0: Humidity (%%)=%0.2f" % ahtx0.relative_humidity)
         if (settings['bh1750']):
-            write_to_log("bh1750: Light=%0.2f lux" % bh1750.lux)
+            write_to_log("bh1750: Light (lux)=%0.2f" % bh1750.lux)
         if settings['scd4x'] and scd4x.data_ready:
             write_to_log("scd4x: CO2=%d ppm" % scd4x.CO2)
-            write_to_log("scd4x: Temperature=%0.2f *C" % scd4x.temperature)
-            write_to_log("scd4x: Humidity=%0.2f %%" % scd4x.relative_humidity)
+            write_to_log("scd4x: Temperature (*C)=%0.2f" % scd4x.temperature)
+            write_to_log("scd4x: Humidity (%%)=%0.2f" % scd4x.relative_humidity)
         if (settings["pm"]):
             data = pms5003.read()
             write_to_log("pm: "+str(pmdata(data)))
@@ -100,12 +107,20 @@ try:
             else:  
                 ens.temperature_compensation = 25
                 ens.humidity_compensation = 50
-            print("AQI (1-5):", ens.AQI)
-            print("TVOC (ppb):", ens.TVOC)
-            print("eCO2 (ppm):", ens.eCO2)
-            print()
+            write_to_log("ens160: AQI (1-5)=" + str(ens.AQI))
+            write_to_log("ens160: TVOC (ppb)=" + str(ens.TVOC))
+            write_to_log("ens160: eCO2 (ppm)=" + str(ens.eCO2))
 
         time.sleep(60)
 
 except KeyboardInterrupt:
     pass
+
+
+# ToDo: Catch this error.
+# Traceback (most recent call last):↷
+#   File "/home/ilce/rpi-zero-basestation/bin/sensorboard/./sensorboard.py", line 89, in <module>↷
+#     data = pms5003.read()↷
+#   File "/usr/local/lib/python3.9/dist-packages/pms5003/__init__.py", line 155, in read↷
+#     raise ChecksumMismatchError("PMS5003 Checksum Mismatch {} != {}".format(checksum, data.checksum))↷
+# pms5003.ChecksumMismatchError: PMS5003 Checksum Mismatch 496 != 0↷
