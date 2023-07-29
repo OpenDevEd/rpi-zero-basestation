@@ -156,10 +156,20 @@ def show_properties():
         write_to_log("rtcAlarm.GetControlStatus="+str(pijuice.rtcAlarm.GetControlStatus()))
         wac = pijuice.power.GetWakeUpOnCharge()
         write_to_log("wakeup.GetWakeUpOnCharge="+str(wac))
+        wd = pijuice.power.GetWatchdog()
+        write_to_log('power.GetWatchdog='+str(wd))
         write_to_log("Script property: default_lowpower_shutoff="+str(default_lowpower_shutoff))
     except:
         write_to_log("Exception occurred in show_properties()")
 
+def getwd():
+    wd = pijuice.power.GetWatchdog()
+    write_to_log(str(wd))
+
+def setwd(value):
+    write_to_log(str(pijuice.power.SetWatchdog(value, non_volatile = True)))
+    getwd()
+                
 def set_wakeup_in_x_sec(x):
     #print(pijuice.rtcAlarm.GetAlarm());
     #SetAlarm({'second': 0, 'minute': 0, 'hour': 'EVERY_HOUR', 'day': 'EVERY_DAY'})
@@ -204,14 +214,6 @@ def reset_to_defaults_wrapper():
         setwd(watchdog_min)
     except:
         write_to_log("An exception occurred in reset_to_defaults_wrapper()")
-
-def getwd():
-    wd = pijuice.power.GetWatchdog()
-    write_to_log(str(wd))
-
-def setwd(value):
-    write_to_log(str(pijuice.power.SetWatchdog(value, non_volatile = True)))
-    getwd()
 
 if sys.argv[1] == "halt":
     print("Shutting down now. Disconnecting power in 60 seconds. Scheduled wakeup only.")
