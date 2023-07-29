@@ -8,6 +8,8 @@ import board
 import adafruit_ahtx0
 import adafruit_bh1750
 import adafruit_scd4x
+from pms5003 import PMS5003
+from pmdata import pmdata
 
 # get uptime of linux system
 def get_uptime():
@@ -62,15 +64,32 @@ if (settings['bh1750']):
     write_to_log("bh1750: init")
     bh1750 = adafruit_bh1750.BH1750(i2c, address=0x5C)
 
-while True:
-    if (settings['ahtx0']):
-        write_to_log("ahtx0: Temperature=%0.2f *C" % ahtx0.temperature)
-        write_to_log("ahtx0: Humidity=%0.2f %%" % ahtx0.relative_humidity)
-    if (settings['bh1750']):
-        write_to_log("bh1750: Light=%0.2f lux" % bh1750.lux)
-    if settings['scd4x'] and scd4x.data_ready:
-        write_to_log("scd4x: CO2=%d ppm" % scd4x.CO2)
-        write_to_log("scd4x: Temperature=%0.2f *C" % scd4x.temperature)
-        write_to_log("scd4x: Humidity=%0.2f %%" % scd4x.relative_humidity)
-    time.sleep(60)
+if (settings["pm"]):
+    # Configure the PMS5003 for Enviro+
+    pms5003 = PMS5003(
+        device='/dev/ttyAMA0',
+        baudrate=9600,
+        pin_enable=22,
+        pin_reset=27
+    )
+    
 
+try:
+    while True:
+        if (settings['ahtx0']):
+            write_to_log("ahtx0: Temperature=%0.2f *C" % ahtx0.temperature)
+            write_to_log("ahtx0: Humidity=%0.2f %%" % ahtx0.relative_humidity)
+        if (settings['bh1750']):
+            write_to_log("bh1750: Light=%0.2f lux" % bh1750.lux)
+        if settings['scd4x'] and scd4x.data_ready:
+            write_to_log("scd4x: CO2=%d ppm" % scd4x.CO2)
+            write_to_log("scd4x: Temperature=%0.2f *C" % scd4x.temperature)
+            write_to_log("scd4x: Humidity=%0.2f %%" % scd4x.relative_humidity)
+        if (settings["pm"]):
+            data = pms5003.read()
+            write_to_log("pm: "+str(pmdata(data)))
+
+        time.sleep(60)
+
+except KeyboardInterrupt:
+    pass
