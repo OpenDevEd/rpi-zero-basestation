@@ -8,8 +8,9 @@ from sqlalchemy import (
     JSON,
     text,
 )
+import config
 from sqlalchemy.orm import declarative_base, Session
-from datetime import datetime
+from datetime import datetime, timezone
 import enum
 import csv
 
@@ -126,7 +127,7 @@ def db_data_transmission_update(engine, id, status):
     session.close()
 
 
-def db_data_to_csv(engine, table_name, file_path, from_id, to_id):
+def db_data_to_csv(engine, table_name, file_path, from_id, to_id, source):
     with Session(bind=engine) as session:
         # Get the column names from the table
         columns = session.execute(text(f"SELECT * FROM {table_name} LIMIT 0")).keys()
@@ -138,7 +139,16 @@ def db_data_to_csv(engine, table_name, file_path, from_id, to_id):
 
         # Write the data to a CSV file
         with open(file_path, "w", newline="") as csv_file:
+            # add comment in first line
             writer = csv.writer(csv_file)
+            dt = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+            dt = dt[:-2] + ":" + dt[-2:]
+            writer.writerow([f"#pizero-serial={config.PIZERO_SERIAL}"])
+            writer.writerow([f"#date={dt}"])
+            writer.writerow([f"#data-logging-of={source}"])
+            writer.writerow([f"#base-station-id={config.ID}"])
+            writer.writerow([f"#base-station-location={config.SCHOOL_LOCATION}"])
+
             writer.writerow(columns)
             writer.writerows(data)
 
@@ -161,9 +171,9 @@ def db_get_dataLogs_length(engine):
         return length
 
 
-db_init("test1")
-for i in range(200):
+# db_init("test1")
+for i in range(190):
     print(i)
     db_data_log_create(db_get_engine("test1"), "test", DataFormat.STRING)
 
-db_data_to_csv(db_get_engine("test1"), "datalogs", "test.csv", 0, 100)
+# db_data_to_csv(db_get_engine("test1"), "datalogs", "test.csv", 0, 100)

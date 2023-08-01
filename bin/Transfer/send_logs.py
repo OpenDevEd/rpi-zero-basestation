@@ -25,9 +25,12 @@ def chunk_and_send(engine, table_name, file_path):
             file_name = file_path + "_" + dt + ".csv"
 
             try:
-                db.db_data_to_csv(engine, table_name, file_name, 0, datalogs_length)
+                db.db_data_to_csv(
+                    engine, table_name, file_name, 0, datalogs_length, "sensor_test"
+                )
                 utils.upload_file_to_api(config.SERVER_URL, file_name)
             except:
+                print("Failed to send data on last row is None and data length < 100")
                 db.db_data_transmission_update(engine, row_id, "failed")
             db.db_data_transmission_update(engine, row_id, "done")
         else:
@@ -40,10 +43,18 @@ def chunk_and_send(engine, table_name, file_path):
                 file_name = file_path + "_" + dt + ".csv"
                 try:
                     db.db_data_to_csv(
-                        engine, table_name, file_name, i, i + config.DATA_CHUNK_SIZE
+                        engine,
+                        table_name,
+                        file_name,
+                        i,
+                        i + config.DATA_CHUNK_SIZE,
+                        "sensor_test",
                     )
                     utils.upload_file_to_api(config.SERVER_URL, file_name)
                 except:
+                    print(
+                        "Failed to send data on last row is None and data length > 100"
+                    )
                     db.db_data_transmission_update(engine, row_id, "failed")
                 db.db_data_transmission_update(engine, row_id, "done")
     else:
@@ -64,10 +75,18 @@ def chunk_and_send(engine, table_name, file_path):
 
             try:
                 db.db_data_to_csv(
-                    engine, table_name, file_name, last_row.to_id, datalogs_length
+                    engine,
+                    table_name,
+                    file_name,
+                    last_row.to_id,
+                    datalogs_length,
+                    "sensor_test",
                 )
                 utils.upload_file_to_api(config.SERVER_URL, file_name)
             except:
+                print(
+                    "Failed to send data on last row is not None and data length < 100"
+                )
                 db.db_data_transmission_update(engine, row_id, "failed")
             db.db_data_transmission_update(engine, row_id, "done")
         # check if last row  to_id is less than datalogs_length and data_chunk_size
@@ -85,10 +104,18 @@ def chunk_and_send(engine, table_name, file_path):
 
                 try:
                     db.db_data_to_csv(
-                        engine, table_name, file_name, i, i + config.DATA_CHUNK_SIZE
+                        engine,
+                        table_name,
+                        file_name,
+                        i,
+                        i + config.DATA_CHUNK_SIZE,
+                        "sensor_test",
                     )
                     utils.upload_file_to_api(config.SERVER_URL, file_name)
                 except:
+                    print(
+                        "Failed to send data on last row is not None and data length > 100"
+                    )
                     db.db_data_transmission_update(engine, row_id, "failed")
                 db.db_data_transmission_update(engine, row_id, "done")
         else:
