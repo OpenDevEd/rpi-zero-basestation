@@ -172,8 +172,8 @@ def db_get_dataLogs_length(engine):
 
 
 # db_init("test1")
-for i in range(190):
-    print(i)
-    db_data_log_create(db_get_engine("test1"), "test", DataFormat.STRING)
+# for i in range(167):
+#     print(i)
+#     db_data_log_create(db_get_engine("test1"), "test", DataFormat.STRING)
 
 # db_data_to_csv(db_get_engine("test1"), "datalogs", "test.csv", 0, 100)

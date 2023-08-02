@@ -9,6 +9,17 @@ from datetime import datetime, timezone
 import config
 
 
+def get_date_time():
+    dt = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+    dt = dt[:-2] + ":" + dt[-2:]
+    return dt
+
+
+def get_file_name(file_path):
+    dt = get_date_time()
+    return file_path + "_" + dt + ".csv"
+
+
 def chunk_and_send(engine, table_name, file_path):
     # get last row in data_transmission table
     last_row = db.db_last_row_data_transmission(engine)
@@ -20,9 +31,7 @@ def chunk_and_send(engine, table_name, file_path):
             row_id = db.db_data_transmission_create(
                 engine, 0, datalogs_length, "in progress"
             )
-            dt = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
-            dt = dt[:-2] + ":" + dt[-2:]
-            file_name = file_path + "_" + dt + ".csv"
+            file_name = get_file_name(file_path)
 
             try:
                 db.db_data_to_csv(
@@ -35,19 +44,16 @@ def chunk_and_send(engine, table_name, file_path):
             db.db_data_transmission_update(engine, row_id, "done")
         else:
             for i in range(0, datalogs_length, config.DATA_CHUNK_SIZE):
-                row_id = db.db_data_transmission_create(
-                    engine, i, i + config.DATA_CHUNK_SIZE, "in progress"
-                )
-                dt = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
-                dt = dt[:-2] + ":" + dt[-2:]
-                file_name = file_path + "_" + dt + ".csv"
+                to_id = min(i + config.DATA_CHUNK_SIZE, datalogs_length)
+                row_id = db.db_data_transmission_create(engine, i, to_id, "in progress")
+                file_name = get_file_name(file_path)
                 try:
                     db.db_data_to_csv(
                         engine,
                         table_name,
                         file_name,
                         i,
-                        i + config.DATA_CHUNK_SIZE,
+                        to_id,
                         "sensor_test",
                     )
                     utils.upload_file_to_api(config.SERVER_URL, file_name)
@@ -69,9 +75,7 @@ def chunk_and_send(engine, table_name, file_path):
             row_id = db.db_data_transmission_create(
                 engine, last_row.to_id, datalogs_length, "in progress"
             )
-            dt = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
-            dt = dt[:-2] + ":" + dt[-2:]
-            file_name = file_path + "_" + dt + ".csv"
+            file_name = get_file_name(file_path)
 
             try:
                 db.db_data_to_csv(
@@ -95,12 +99,9 @@ def chunk_and_send(engine, table_name, file_path):
             and last_row.to_id + config.DATA_CHUNK_SIZE < datalogs_length
         ):
             for i in range(last_row.to_id, datalogs_length, config.DATA_CHUNK_SIZE):
-                row_id = db.db_data_transmission_create(
-                    engine, i, i + config.DATA_CHUNK_SIZE, "in progress"
-                )
-                dt = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
-                dt = dt[:-2] + ":" + dt[-2:]
-                file_name = file_path + "_" + dt + ".csv"
+                to_id = min(i + config.DATA_CHUNK_SIZE, datalogs_length)
+                row_id = db.db_data_transmission_create(engine, i, to_id, "in progress")
+                file_name = get_file_name(file_path)
 
                 try:
                     db.db_data_to_csv(
@@ -108,7 +109,7 @@ def chunk_and_send(engine, table_name, file_path):
                         table_name,
                         file_name,
                         i,
-                        i + config.DATA_CHUNK_SIZE,
+                        to_id,
                         "sensor_test",
                     )
                     utils.upload_file_to_api(config.SERVER_URL, file_name)
