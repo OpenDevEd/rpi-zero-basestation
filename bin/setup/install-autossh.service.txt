@@ -1,0 +1,22 @@
+[Unit]
+Description=Autossh
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+User=ilce
+ExecStart=/usr/bin/autossh -M 0 -N \
+	-o "ServerAliveInterval 15" \
+	-o "ServerAliveCountMax 3" \
+	-o "ConnectTimeout 10" \
+	-o "ExitOnForwardFailure yes" \
+	-i /home/ilce/.ssh/id_rsa \
+	-p 22 root@157.245.35.62 \
+	-R <PORT>:localhost:22
+
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
