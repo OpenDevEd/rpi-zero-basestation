@@ -1,8 +1,13 @@
 *~
 BaCkUp
-BaCkUpTaRgZ
+
+
 __pycache__
+BaCkUpTaRgZ
+config.py
+
 bin/sensorboard/settings.json
+
 
 
 !Build/
