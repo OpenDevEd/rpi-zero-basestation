@@ -5,7 +5,7 @@ import os
 import pathlib
 import json
 
-sys.path.append("../")
+
 import config
 from datetime import datetime, timezone
 import requests
@@ -163,7 +163,6 @@ def upload_file_to_api(url, file_path):
     # Check the response status code
     if response.status_code == 200:
         print(response.text)
-        print("File uploaded successfully.")
     else:
         print(f"Error uploading file: {response.text}")
 
