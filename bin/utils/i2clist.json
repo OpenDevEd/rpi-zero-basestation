@@ -1,0 +1,17 @@
+{
+    "14" : "PiJuice",
+    "3C" : "Adafruit LoRa Bonnet",
+    "4C" : "PHAT-NBIOT",
+    "4D" : "PHAT-GSM",
+    "68" : "PiJuice RTC",
+    "18": "MCP9808 High Accuracy I2C Temperature Sensor Breakout Board 0x18 (0x18 - 0x1F)",
+    "23": "LTR-559 Light & Proximity Sensor Breakout 0x23; BH1750 Light Sensor - STEMMA QT / Qwiic 0x23, 0x5C",
+    "5C": "BH1750 Light Sensor - STEMMA QT / Qwiic 0x23, 0x5C",
+    "38": "Adafruit AHT20 - Temperature & Humidity Sensor Breakout Board - STEMMA QT / Qwiic 0x38",
+    "44": "Sensirion SHT4x Precision Temperature & Humidity Sensor  0x44; SHT31 Digital Temperature & Humidity Sensor 0x45 (default), alternative 0x44",
+    "45": "SHT31 Digital Temperature & Humidity Sensor 0x45 (default), alternative 0x44",
+    "53": "Fermion: ENS160 Air Quality Sensor (Breakout) 0x53 (default), 0x52 (alternative)",
+    "52": "Fermion: ENS160 Air Quality Sensor (Breakout) 0x53 (default), 0x52 (alternative)",
+    "62": "Adafruit SCD-4x - True CO2 Temperature and Humidity Sensor 0x62"
+}
+
