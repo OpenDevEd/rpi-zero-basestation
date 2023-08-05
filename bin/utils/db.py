@@ -8,6 +8,11 @@ from sqlalchemy import (
     JSON,
     text,
 )
+
+import sys
+
+sys.path.append("../")
+
 import config
 from sqlalchemy.orm import declarative_base, Session
 from datetime import datetime, timezone
@@ -31,6 +36,7 @@ class DataLogs(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     date = Column(DateTime, default=datetime.utcnow())
+    source = Column(String)
     format = Column(Enum(DataFormat))
     dataJSON = Column(JSON, nullable=True)
     dataString = Column(String, nullable=True)
@@ -60,36 +66,60 @@ class dataTransmissions(Base):
     updated_at = Column(DateTime, default=datetime.utcnow())
 
 
-def db_init(name):
+def db_init():
     # Create the engine and initialize the database
+    print("Initializing database...")
+
     engine = create_engine(
-        "sqlite:///{}.db".format(name), echo=False, pool_size=10, max_overflow=20
+        f"sqlite:///{config.DATABASE_LOCATION}/{config.DATABASE_NAME}.db",
+        echo=False,
+        pool_size=10,
+        max_overflow=20,
     )
+    print("Creating tables...")
     Base.metadata.create_all(engine)
+    print("Database initialization complete.")
+    # print location of database
+    print(f"Database location: {config.DATABASE_LOCATION}/{config.DATABASE_NAME}.db")
     return engine
 
 
-def db_get_engine(name):
+def db_get_engine():
     engine = create_engine(
-        "sqlite:///{}.db".format(name), echo=False, pool_size=10, max_overflow=20
+        f"sqlite:///{config.DATABASE_LOCATION}/{config.DATABASE_NAME}.db",
+        echo=False,
+        pool_size=10,
+        max_overflow=20,
     )
     return engine
 
 
-def db_data_log_create(engine, data, format):
+def db_data_log_create(source, data, format):
+    engine = db_get_engine()
     session = Session(bind=engine)
-    if format == DataFormat.JSON:
-        data_log = DataLogs(date=datetime.utcnow(), format=format, dataJSON=data)
-    elif format == DataFormat.STRING:
-        data_log = DataLogs(date=datetime.utcnow(), format=format, dataString=data)
+    print("Creating data log...")
+
+    if format == "json":
+        session.add(
+            DataLogs(
+                date=datetime.utcnow(), format=format, dataJSON=data, source=source
+            )
+        )
+    elif format == "string":
+        session.add(
+            DataLogs(
+                date=datetime.utcnow(), format=format, dataString=data, source=source
+            )
+        )
     else:
         pass
-    session.add(data_log)
     session.commit()
+
     session.close()
 
 
-def db_data_event_create(engine, type, status, name, message, source):
+def db_data_event_create(type, status, name, message, source):
+    engine = db_get_engine()
     session = Session(bind=engine)
     session.add(
         DataEvents(
@@ -105,7 +135,8 @@ def db_data_event_create(engine, type, status, name, message, source):
     session.close()
 
 
-def db_data_transmission_create(engine, from_id, to_id, status):
+def db_data_transmission_create(from_id, to_id, status):
+    engine = db_get_engine()
     session = Session(bind=engine)
     data_transmission = dataTransmissions(
         date=datetime.utcnow(), from_id=from_id, to_id=to_id, status=status
@@ -118,7 +149,8 @@ def db_data_transmission_create(engine, from_id, to_id, status):
     # return id
 
 
-def db_data_transmission_update(engine, id, status):
+def db_data_transmission_update(id, status):
+    engine = db_get_engine()
     session = Session(bind=engine)
     session.query(dataTransmissions).filter(dataTransmissions.id == id).update(
         {"status": status, "updated_at": datetime.utcnow()}
@@ -127,7 +159,8 @@ def db_data_transmission_update(engine, id, status):
     session.close()
 
 
-def db_data_to_csv(engine, table_name, file_path, from_id, to_id, source):
+def db_data_to_csv(table_name, file_path, from_id, to_id, source):
+    engine = db_get_engine()
     with Session(bind=engine) as session:
         # Get the column names from the table
         columns = session.execute(text(f"SELECT * FROM {table_name} LIMIT 0")).keys()
@@ -153,7 +186,8 @@ def db_data_to_csv(engine, table_name, file_path, from_id, to_id, source):
             writer.writerows(data)
 
 
-def db_last_row_data_transmission(engine):
+def db_last_row_data_transmission():
+    engine = db_get_engine()
     with Session(bind=engine) as session:
         # Get the data from the table
         last_row = (
@@ -164,14 +198,48 @@ def db_last_row_data_transmission(engine):
         return last_row
 
 
-def db_get_dataLogs_length(engine):
+def db_get_dataLogs_length():
+    engine = db_get_engine()
     with Session(bind=engine) as session:
         # Get the data from the table
         length = session.query(DataLogs).count()
         return length
 
 
-# db_init("test1")
+def db_export_all_data_to_csv(name):
+    engine = db_get_engine()
+    with Session(bind=engine) as session:
+        # Get the data from the table
+        data = session.execute(text(f"SELECT * FROM dataLogs")).fetchall()
+        name = name + ".csv"
+        # Write the data to a CSV file
+        with open(name, "w", newline="") as csv_file:
+            # add comment in first line
+            writer = csv.writer(csv_file)
+            dt = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+            dt = dt[:-2] + ":" + dt[-2:]
+            writer.writerow([f"#pizero-serial={config.PIZERO_SERIAL}"])
+            writer.writerow([f"#date={dt}"])
+            writer.writerow([f"#base-station-id={config.ID}"])
+            writer.writerow([f"#base-station-location={config.SCHOOL_LOCATION}"])
+
+            writer.writerow(
+                ["id", "date", "format", "dataJSON", "dataString", "source"]
+            )
+            writer.writerows(data)
+
+def db_show_data_from(from_id):
+    engine = db_get_engine()
+    with Session(bind=engine) as session:
+        # Get the data from the table
+        data = session.execute(
+            text(f"SELECT * FROM dataLogs where id> {from_id}")
+        ).fetchall()
+        for d in data:
+            print(d)
+
+
+# db_init()
 # for i in range(167):
 #     print(i)
 #     db_data_log_create(db_get_engine("test1"), "test", DataFormat.STRING)
