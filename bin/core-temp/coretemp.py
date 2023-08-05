@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import json
 import os
 import re
@@ -11,7 +12,7 @@ import db
 def logdata(result):
     datatype = "json"
     type = "coretemp Logger"
-    name =  "coretemp Reading"
+    name =  "RPi Coretemp Reading"
     source = "coretemp"
     try:
         db.db_data_log_create("coretemp", result, datatype)
@@ -45,7 +46,7 @@ def getData():
     entry["cpu"] = int(digits[0])/1000
     return entry
 
-logdata(json.dumps(getData()))
+logdata(getData())
 # convert entry to json
 #with open('entry.json', 'w') as outfile:
 #    json.dump(entry, outfile)
