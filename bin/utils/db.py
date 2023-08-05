@@ -228,6 +228,7 @@ def db_export_all_data_to_csv(name):
             )
             writer.writerows(data)
 
+
 def db_show_data_from(from_id):
     engine = db_get_engine()
     with Session(bind=engine) as session:
@@ -237,6 +238,7 @@ def db_show_data_from(from_id):
         ).fetchall()
         for d in data:
             print(d)
+
 
 
 # db_init()
