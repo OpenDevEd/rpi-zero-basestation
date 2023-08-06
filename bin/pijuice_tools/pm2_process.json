@@ -2,7 +2,7 @@
   "name": "pijuice-manager",
   "script": "pijuice-manager.py",
   "instances": 1,
-  "watch": true,
+  "watch": false,
   "exec_mode": "fork",
   "cron_restart": "*/5 * * * *"
 }
