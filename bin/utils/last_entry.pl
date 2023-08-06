@@ -28,7 +28,7 @@ my @all = split /\n/, `python export_db.py $last`;
 my %x;
 foreach (@all) {
     #say "X$_";
-    if (m/("sensor": "\w+"|"topic": "A\d+ .*?"|"battery_level": \d+)/) {
+    if (m/("sensor": "\w+"|"topic": "A\d+ .*?"|"battery_level":|"sensorbox": "\d+")/) {
 	$x{$1} = $_;
     };
     if (m/^\((\d+)/) {

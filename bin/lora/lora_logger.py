@@ -50,12 +50,12 @@ sys.path.append("../")
 import db
 
 def logdata(result):
-    logtype = "sensorboard-pm"
+    logtype = "lora"
     datatype = "json"
-    type = "sensorboard PM Logger"
-    name =  "sensorboard PM Reading"
-    activity =  "sensorboard PM reading"
-    source = "sensorboard pms5003"
+    type = "lora Logger"
+    name =  "lora logger reading"
+    activity =  "lora logger reading"
+    source = "lora"
     try:
         db.db_data_log_create(logtype, result, datatype)
         db.db_data_event_create(
@@ -129,6 +129,7 @@ while True:
         # date_string = datetime.now().strftime("%Y-%m-%dT%H:%M:%S%z")
         message = {}
         message["header"] = ''.join('{:02x} '.format(x) for x in packet[0:4])
+        message["sensorbox"] = str(packet[1])
         message["payload"] = "{0}".format(packet[4:])
         message["rssi"] = "{0}".format(rfm9x.last_rssi)
         write_to_log(message) 
