@@ -17,13 +17,14 @@ sys.path.append("../")
 import db
 
 def logdata(result):
+    logtype = "sensorboard"
     datatype = "json"
     type = "sensorboard Logger"
     name =  "sensorboard Reading"
     activity =  "sensorboard reading"
     source = "sensorboard"
     try:
-        db.db_data_log_create("coretemp", result, datatype)
+        db.db_data_log_create(logtype, result, datatype)
         db.db_data_event_create(
             type,
             "Success",
