@@ -1,0 +1,9 @@
+{
+  "name": "sensor_pms5003",
+  "script": "sensor_pms5003.py",
+  "instances": 1,
+  "autorestart": false,
+  "watch": true,
+  "exec_mode": "fork",
+  "cron_restart": "*/15 * * * *"
+}

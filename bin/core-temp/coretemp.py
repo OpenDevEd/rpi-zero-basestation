@@ -44,6 +44,7 @@ def getData():
     digits = re.findall(r'[\d\.]+', cputemp.stdout.decode('utf-8'))
     print(int(digits[0])/1000)
     entry["cpu"] = int(digits[0])/1000
+    entry["sensor"] = "RPiZero"
     return entry
 
 logdata(getData())
