@@ -1,0 +1,8 @@
+{
+  "name": "lora_logger",
+  "script": "lora_logger_interrupt.py",
+  "instances": 1,
+  "autorestart": true,
+  "watch": false,
+  "exec_mode": "fork"
+}

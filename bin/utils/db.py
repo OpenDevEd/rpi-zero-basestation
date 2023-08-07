@@ -230,6 +230,7 @@ def db_export_all_data_to_csv(name):
             writer.writerows(data)
 
 
+
 def run_sql_query(sql_query):
     engine = db_get_engine()
     session = Session(bind=engine)
@@ -348,6 +349,20 @@ def get_sms_message():
 
 
 # get_last_datalog_by_source("last_datalogs")
+
+def db_show_data_from(from_id):
+    engine = db_get_engine()
+    with Session(bind=engine) as session:
+        # Get the data from the table
+        data = session.execute(
+            text(f"SELECT * FROM dataLogs where id> {from_id}")
+        ).fetchall()
+        for d in data:
+            print(d)
+
+
+
+
 # db_init()
 # for i in range(167):
 #     print(i)
