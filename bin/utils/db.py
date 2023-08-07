@@ -77,6 +77,7 @@ def db_init():
         pool_size=10,
         max_overflow=20,
     )
+    print(f"Database location: {config.DATABASE_LOCATION}/{config.DATABASE_NAME}.db")
     print("Creating tables...")
     Base.metadata.create_all(engine)
     print("Database initialization complete.")
