@@ -18,7 +18,7 @@ GetOptions (
     "number=f" => \$number,
     ) or die("Error in command line arguments\n");
 
-my $last = 4000;
+my $last = 0;
 if (-e "$0.last") {
     chomp($last = `cat $0.last`);
 };
