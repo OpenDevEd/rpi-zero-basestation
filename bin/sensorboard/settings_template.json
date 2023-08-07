@@ -2,6 +2,6 @@
     "scd4x": true,
     "ahtx0": true,
     "bh1750": true,
-    "pm": false,
+    "pm": true,
     "ens160": true
 }
