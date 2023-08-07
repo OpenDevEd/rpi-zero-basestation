@@ -7,6 +7,7 @@ import sys
 
 sys.path.append("../utils")
 import utils
+import db
 
 
 def on_connect(client, userdata, flags, rc):
@@ -30,16 +31,25 @@ def save_data(topic, data):
         if topic != "bridge":
             data = json.loads(data)
             data["topic"] = topic
-            print(f"{topic}:")
-            utils.update_csv_with_json("Zigbee-sensor", data)
-            for key, value in data.items():
-                print(f"\t{key}: {value}")
-    except json.decoder.JSONDecodeError:
-        print("json error")
-    except IndexError:
-        print("index error")
+
+            db.db_data_log_create("zigbee", data, "json")
+            # TODO: convert to config
+            db.db_data_event_create(
+                "Data Logging",
+                "Success",
+                "Sensor Reading",
+                "Zigbee sensor reading",
+                "Zigbee",
+            )
     except:
         print("unknown error")
+        db.db_data_event_create(
+            "Data Logging",
+            "Failure",
+            "Sensor Reading",
+            "Zigbee sensor reading",
+            "Zigbee",
+        )
 
 
 client = mqtt.Client()
