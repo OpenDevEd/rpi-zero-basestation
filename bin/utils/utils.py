@@ -6,6 +6,9 @@ import pathlib
 import json
 
 
+sys.path.append("../")
+
+
 import config
 from datetime import datetime, timezone
 import requests
@@ -152,7 +155,7 @@ def upload_file_to_api(url, file_path):
     # Convert the bytes object to a string
     file_path = file_path.replace(config.LOG_PATH, "logs")
     file_contents_str = file_contents.decode("utf-8")
-
+    file_path = config.ID + "/" + file_path
     # Set the request headers
     headers = {"Content-Type": "application/json"}
     body = json.dumps({"fileName": file_path, "body": file_contents_str})

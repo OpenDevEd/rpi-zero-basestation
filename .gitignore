@@ -18,7 +18,7 @@ bin/sensorboard/settings.json
 *.o
 *.pm.tdy
 *.bs
-GSM/
+
 
 # Devel::Cover
 cover_db/

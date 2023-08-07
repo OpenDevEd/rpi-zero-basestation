@@ -27,3 +27,10 @@ SCHOOL_LOCATION = "SCHOOL_LOCATION"
 # server configuration
 SERVER_URL = "SERVER_URL"
 DATA_CHUNK_SIZE = 100
+
+# database configuration
+DATABASE_NAME = "ILCE-database"
+DATABASE_LOCATION = "/home/ilce/base/"
+
+# SMS configuration
+PHONE_NUMBER = "PHONE_NUMBER"

@@ -1,0 +1,9 @@
+{
+  "name": "send data via sms",
+  "script": "send_data_sms.py",
+  "instances": 1,
+  "autorestart": false,
+  "watch": false,
+  "exec_mode": "fork",
+  "cron_restart": "0 12 * * *"
+}

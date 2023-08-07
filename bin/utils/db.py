@@ -1,3 +1,7 @@
+import csv
+import enum
+from datetime import datetime, timezone
+from sqlalchemy.orm import declarative_base, Session
 from sqlalchemy import (
     create_engine,
     Column,
@@ -14,10 +18,7 @@ import sys
 sys.path.append("../")
 
 import config
-from sqlalchemy.orm import declarative_base, Session
-from datetime import datetime, timezone
-import enum
-import csv
+
 
 # Define the database schema
 Base = declarative_base()
@@ -229,6 +230,126 @@ def db_export_all_data_to_csv(name):
             writer.writerows(data)
 
 
+
+def run_sql_query(sql_query):
+    engine = db_get_engine()
+    session = Session(bind=engine)
+    sql_query = text(sql_query)
+    results = session.execute(sql_query).fetchall()
+    session.close()
+    return results
+
+
+def get_last_datalog_by_source(filename):
+    # Connect to the database
+    sql_query = """
+        SELECT id, date, json_extract(dataJSON, '$.topic') as 'topic', source, format, json_extract(dataJSON, '$.battery') as 'battery', json_extract(dataJSON, '$.temperature') as 'temperature'
+        FROM dataLogs
+        WHERE id IN (
+            SELECT MAX(id)
+            FROM dataLogs
+            WHERE source = 'zigbee'
+            GROUP BY json_extract(dataJSON, '$.topic')
+        )
+        ORDER BY id DESC;
+    """
+    results = run_sql_query(sql_query)
+    with open(f"{filename}.txt", "w") as f:
+        f.write("ID,Date,Topic,Source,Format,Battery,Temperature\n")
+        for row in results:
+            f.write(",".join(str(x) for x in row) + "\n")
+
+    sql_query = """
+        SELECT id, date, source, format, dataJSON, dataString
+        FROM dataLogs
+        WHERE id IN (
+            SELECT MAX(id)
+            FROM dataLogs
+            WHERE source != 'zigbee' AND source != 'sensorboard-pm' AND source != 'sensorboard'
+            GROUP BY source
+        )
+        ORDER BY id DESC;
+    """
+    results2 = run_sql_query(sql_query)
+    with open(f"{filename}.txt", "a") as f:
+        f.write("\nID,Date,Source,Format,DataJSON,DataString\n")
+        for row in results2:
+            f.write(",".join(str(x) for x in row) + "\n")
+
+    sql_query = """
+        SELECT id, date, source, format, json_extract(dataJSON, '$.sensor') as 'sensor', dataJSON
+        FROM dataLogs
+        WHERE id IN (
+            SELECT MAX(id)
+            FROM dataLogs
+            WHERE source = 'sensorboard' OR source = 'sensorboard-pm'
+            GROUP BY json_extract(dataJSON, '$.sensor')
+        )
+        ORDER BY id DESC;
+    """
+    results3 = run_sql_query(sql_query)
+    with open(f"{filename}.txt", "a") as f:
+        f.write("\nID,Date,Source,Format,Sensor,DataJSON\n")
+        for row in results3:
+            f.write(",".join(str(x) for x in row) + "\n")
+
+
+def get_sms_message():
+    base_station_id = config.ID
+    zigbee_sql_query = """
+    SELECT json_extract(dataJSON, '$.topic') as 'topic'
+    FROM dataLogs
+    WHERE source = 'zigbee' AND date >= datetime('now', '-1 day')
+    GROUP BY json_extract(dataJSON, '$.topic');
+    """
+    zigbee_results = run_sql_query(zigbee_sql_query)
+    zigbee_topics = " ".join([x[0][:2] for x in zigbee_results])
+
+    sensorboard_sql_query = """
+    SELECT json_extract(dataJSON, '$.sensor') as 'sensor'
+    FROM dataLogs
+    WHERE (source = 'sensorboard-pm' or source = 'sensorboard' ) AND date >= datetime('now', '-1 day') and json_extract(dataJSON, '$.sensor') != 'null'
+    GROUP BY json_extract(dataJSON, '$.sensor');
+    """
+    sensorboard_results = run_sql_query(sensorboard_sql_query)
+    sensorboard_topics = " ".join([x[0] for x in sensorboard_results])
+
+    # print("sensorboard_topics", sensorboard_topics)
+    # print("zigbee_topics", zigbee_topics)
+
+    record_number_sql_query = """
+    select MIN(id) as 'from_id' , MAX(id) as 'to_id' from dataLogs where date >= datetime('now', '-1 day')
+    """
+    record_number_results = run_sql_query(record_number_sql_query)
+    from_id = record_number_results[0][0]
+    to_id = record_number_results[0][1]
+    battery_sql_query = """
+    SELECT MIN(json_extract(dataJSON, '$.battery')) as 'min', MAX(json_extract(dataJSON, '$.battery')) as 'max'
+    FROM dataLogs
+    WHERE source = 'zigbee' AND date >= datetime('now', '-1 day');
+    """
+    battery_results = run_sql_query(battery_sql_query)
+    battery_min = battery_results[0][0]
+    battery_max = battery_results[0][1]
+
+    temperature_sql_query = """
+    SELECT MIN(json_extract(dataJSON, '$.temperature')) as 'min', MAX(json_extract(dataJSON, '$.temperature')) as 'max'
+    FROM dataLogs
+    WHERE source = 'zigbee' AND date >= datetime('now', '-1 day');
+    """
+    temperature_results = run_sql_query(temperature_sql_query)
+    temperature_min = temperature_results[0][0]
+    temperature_max = temperature_results[0][1]
+    res = f"data=B:{base_station_id};A:{sensorboard_topics};Z:{zigbee_topics};R:{from_id},{to_id};BC:{battery_min},{battery_max};BT:{temperature_min},{temperature_max};"
+    print(res)
+    return res
+
+
+# get_sms_message()
+
+
+# get_last_datalog_by_source("last_datalogs")
+
 def db_show_data_from(from_id):
     engine = db_get_engine()
     with Session(bind=engine) as session:
@@ -238,6 +359,7 @@ def db_show_data_from(from_id):
         ).fetchall()
         for d in data:
             print(d)
+
 
 
 

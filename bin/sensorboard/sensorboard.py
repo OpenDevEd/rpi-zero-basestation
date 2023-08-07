@@ -1,9 +1,13 @@
 import json
 import shutil
-#from pijuice import PiJuice # Import pijuice module
+
+from pijuice import PiJuice  # Import pijuice module
 import os
 import sys
-from datetime import datetime , timedelta, timezone
+
+
+from datetime import datetime, timedelta
+
 import time
 import board
 import adafruit_ahtx0
@@ -12,6 +16,7 @@ import adafruit_scd4x
 from pms5003 import PMS5003
 from pmdata import pmdata
 import adafruit_ens160
+
 sys.path.append("../utils")
 sys.path.append("../")
 import db
@@ -67,7 +72,9 @@ def get_date_string_iso8601():
 #         os.makedirs(path)
 #     return path
 
+
 # Write text to log file with path get_logdir()
+
 def write_to_log(message):
     # logdata(text)
     message["date"] = get_date_string_iso8601()
@@ -80,14 +87,18 @@ def write_to_log(message):
     #     f.write(printstr+"\n")
     # print(printstr)
 
+
 # if settings.json does not exist, copy settings_template.json to settings.json
-if not os.path.isfile('/home/ilce/bin/sensorboard/settings.json'):
+if not os.path.isfile("/home/ilce/bin/sensorboard/settings.json"):
     print("Copying settings_template.json to settings.json")
     print("Please configure your sensors as needed.")
-    shutil.copyfile('/home/ilce/bin/sensorboard/settings_template.json', '/home/ilce/bin/sensorboard/settings.json')
+    shutil.copyfile(
+        "/home/ilce/bin/sensorboard/settings_template.json",
+        "/home/ilce/bin/sensorboard/settings.json",
+    )
 
 # read default_hour, default_minute, default_chargelevel_turnon, default_lowpower_shutoff from json file
-with open('/home/ilce/bin/sensorboard/settings.json', 'r') as f:
+with open("/home/ilce/bin/sensorboard/settings.json", "r") as f:
     settings = json.load(f)
 
 message = {}
@@ -97,8 +108,9 @@ write_to_log(message)
 
 i2c = board.I2C()  # uses board.SCL and board.SDA
 # i2c = board.STEMMA_I2C()  # For using the built-in STEMMA QT connector on a microcontroller
-if (settings['scd4x']):
+if settings["scd4x"]:
     scd4x = adafruit_scd4x.SCD4X(i2c)
+
     #print("scd4x: Serial number:" + str( [hex(i) for i in scd4x.serial_number]) )
     message = {}
     message["sensor"] = "scd4x"
@@ -117,6 +129,7 @@ if (settings['scd4x']):
 
 if (settings['ahtx0']):
     #print("ahtx0: init")
+
     ahtx0 = adafruit_ahtx0.AHTx0(i2c)
     message = {}
     message["sensor"] = "ahtx0"
@@ -124,6 +137,7 @@ if (settings['ahtx0']):
     message["temperature"] = "*C"
     message["humidity"] = "%"
     write_to_log(message)
+
 
 if (settings['bh1750']):
     #print("bh1750: init")
@@ -134,7 +148,7 @@ if (settings['bh1750']):
     message["lux"] = "lx"
     write_to_log(message)
 
-if (settings["pm"]):
+if settings["pm"]:
     # Configure the PMS5003 for Enviro+
     pms5003 = PMS5003(
         device='/dev/ttyAMA0',
@@ -142,7 +156,6 @@ if (settings["pm"]):
         pin_enable=22,
         pin_reset=27
     )
-
 if (settings["ens160"]):
     ens = adafruit_ens160.ENS160(i2c)
     message = {}
@@ -244,6 +257,11 @@ try:
 
 except KeyboardInterrupt:
     pass
+except Exception as e:
+    print("Error: " + str(e))
+    db.db_data_event_create(
+        "Data Logging", "Failure", "Sensor Reading", str(e), "sensorboard"
+    )
 
 
 # ToDo: Catch this error.

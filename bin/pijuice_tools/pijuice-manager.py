@@ -5,6 +5,7 @@ import sys
 sys.path.append("../utils")
 sys.path.append("../")
 import utils
+import db
 
 import config
 
@@ -143,7 +144,21 @@ def get_all(do_print=True, log=False):
         pijuice, do_print, log
     )
     result["fault_status"] = get_fault_status(pijuice, do_print, log)
-    utils.update_csv_with_json("battery", result)
+    try:
+        db.db_data_log_create("pijuice", result, "json")
+        db.db_data_event_create(
+            "Data Logger",
+            "Success",
+            "Sensor Reading",
+            "pijuice reading",
+            "pijuice-manager",
+        )
+
+    except Exception as e:
+        db.db_data_event_create(
+            "Data Logger", "Error", "Sensor Reading", str(e), "pijuice-manager"
+        )
+        print(str(e))
 
 
 # wrrite function to send alerts
