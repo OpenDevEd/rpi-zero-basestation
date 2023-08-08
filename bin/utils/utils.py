@@ -4,7 +4,8 @@ import sys
 import os
 import pathlib
 import json
-
+import smtplib
+import ssl
 
 sys.path.append("../")
 
@@ -177,3 +178,21 @@ def upload_logs_files_to_api(url, folder_path):
     # loop through the files and upload them
     for file in files:
         upload_file_to_api(url, file)
+
+
+def send_email(subject, body,receivers):
+    sender_email = config.SENDER_EMAIL 
+    receiver_email = receivers
+    password =config.EMAIL_PASSWORD 
+    smtp_server = config.SMTP_SERVER 
+    port = config.PORT
+    message = f"Subject: {subject}\n\n{body}"
+    # Create a secure SSL context
+    context = ssl.create_default_context()
+    # Send the email
+    with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+        server.login(sender_email, password)
+        server.sendmail(sender_email, receiver_email, message)
+
+
+    print("Alert email sent successfully!")
