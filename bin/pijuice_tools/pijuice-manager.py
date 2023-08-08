@@ -178,11 +178,11 @@ def check_battery():
     # get battery level using get_battery_level function
     result = get_battery_level(pijuice, False, False)
     # if the battery level is less than 20% send an alert
-    if result < config.BATTERY_TO_ALERT:
-        send_alerts("battery level is less than 20%")
+    if result <= config.BATTERY_TO_ALERT:
+        send_alerts(f"battery level is less than {result}%")
     # if the battery level is less than 10% go to sleep
     if result < config.BATTERY_TO_SLEEP:
-        send_alerts("battery level is less than 10 percent and going to sleep")
+        send_alerts(f"battery level {result} is less than 10 percent and going to sleep")
         go_to_sleep()
 
 
@@ -202,13 +202,16 @@ def check_charging():
 
 def check_temperature():
     result = get_battery_temperature(pijuice, False, False)
-    if result > config.TEMPERATURE_TO_ALERT:
-        send_alerts("battery temperature is too high")
+    if result >= config.TEMPERATURE_TO_ALERT:
+        send_alerts(f"battery temperature {result} is too high")
     if result > config.TEMPERATURE_TO_SLEEP:
-        send_alerts("battery temperature is too high and going to sleep")
+        send_alerts("battery temperature {result} is too high and going to sleep")
         go_to_sleep()
 
 
 for i in range(0, 10):
     get_all(do_print=False, log=False)
+  
     time.sleep(3)
+check_battery()
+check_temperature()
