@@ -165,6 +165,7 @@ def get_all(do_print=True, log=False):
 def send_alerts(alert_message):
     # TODO: send alerts to somewhere
     print(f"send alert: {alert_message}")
+    utils.send_email("pijuice alert", alert_message,config.RECEIVER_EMAIL)
 
 
 def go_to_sleep():
