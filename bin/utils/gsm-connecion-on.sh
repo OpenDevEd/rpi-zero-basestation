@@ -1,1 +1,5 @@
-sudo pon gsm; sudo pppd call gsm; sleep 30; ifconfig
+#!/bin/sh
+sudo pon gsm;
+sudo pppd call gsm;
+sleep 5;
+ifconfig
