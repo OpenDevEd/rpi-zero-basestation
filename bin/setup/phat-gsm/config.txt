@@ -1,0 +1,2 @@
+dtparam=i2c_arm=on
+dtoverlay=sc16is750-i2c,addr=0x4d,int_pin=24,fixed-clock=14745600
