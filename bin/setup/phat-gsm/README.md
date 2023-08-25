@@ -25,7 +25,7 @@ It's helpful to explicitly use IPv4 for testing because IPv6 connections require
 
 As a side note, as we were trying to get the modem working, we tried this with kernel 5.4 (as opposed to the default kernel 6.x), but this had no impact on anything.
 
-Note that for debugging, packaged like `socat`, `lsof`, `tcpdump`, and `telnet` are useful packages for debugging, but not needed for running the device.
+Note that for debugging, packaged like `socat`, `lsof`, `tcpdump`, and `telnet` are useful packages for debugging, but not needed for running the device. As the device will be deployed into Tanzanian schools, with limited connectivity, we've also added the documentation from Designer Systems.
 
 To what extent are these instructions helpful to your use case?
 
