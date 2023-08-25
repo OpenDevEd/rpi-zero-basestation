@@ -1,6 +1,8 @@
 In our setup, we use a Designer Systems phat-gsm module. https://www.designersystems.co.uk/robotics/PHAT-GSM_info.htm
 
-It is important to adjust the baud rate, because the device works over I2C, and the device gets stuck when it received "too much" data from TLS connections. The device
+As the hardware is I2C based there are some limitations in relation to receiving a large amount of serial data from the modem so you can get RX buffer overrun errors. The simplest way of addressing this limitation is to reduce the baud rate so that the RX buffer fills up slower and interrupts to the Raspberry-Pi are less often. There is an AT command that allows the modem baud rate to be re-configured and once stored within the modem on each reboot you will be able to use the lower rate.
+
+In other words, because this is an I2C device, without baud rate adjustment, gets stuck when it receives "too much" data from TLS connections. The device
 could handle smaller ping requests without an adjustment of the baud rate.
 
 In this folder, there are
