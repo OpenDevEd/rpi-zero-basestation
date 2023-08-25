@@ -12,10 +12,7 @@ See `bin/setup`.
 
 # Companion project
 
-* The data logger hardware/software, based on Raspberry Pi Pico, is avaialble here https://github.com/OpenDevEd/pcb-pico-datalogger (our fork) or https://github.com/bablokb/pcb-pico-datalogger (upstream).
+The data logger hardware/software, based on Raspberry Pi Pico, is avaialble here
+* https://github.com/OpenDevEd/pcb-pico-datalogger (our fork) and here
+* https://github.com/bablokb/pcb-pico-datalogger (upstream).
 
-# Use of rsync
-For copying / rsync with basestations:
-```
-synchronise.pl --help
-```
