@@ -1,4 +1,4 @@
-In our setup, we use a Designer Systems phat-gsm module.
+In our setup, we use a Designer Systems phat-gsm module. https://www.designersystems.co.uk/robotics/PHAT-GSM_info.htm
 
 It is important to adjust the baud rate, because the device works over I2C, and the device gets stuck when it received "too much" data from TLS connections. The device
 could handle smaller ping requests without an adjustment of the baud rate.
