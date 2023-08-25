@@ -27,7 +27,7 @@ As a side note, as we were trying to get the modem working, we tried this with k
 
 Note that for debugging, packaged like `socat`, `lsof`, `tcpdump`, and `telnet` are useful packages for debugging, but not needed for running the device. As the device will be deployed into Tanzanian schools, with limited connectivity, we've also added the documentation from Designer Systems.
 
-To what extent are these instructions helpful to your use case?
+To what extent are these instructions helpful to other use cases?
 
 1. Changing a mobile network provider may require a chat script update (dial-in number, username, password, APN). Ideally one would make it with a configuration template, which you can apply for any new device or provider you use. It can be done with Ansible or simple bash scripting.
 
