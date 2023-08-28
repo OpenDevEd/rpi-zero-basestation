@@ -14,7 +14,7 @@ def onoff(turnon):
     GPIO.output(pin, 1)         # set GPIO23 to 1/GPIO.HIGH/True
     if turnon:
         print("Turning on, please wait.")
-        sleep(1.0)
+        sleep(2.0)
     else:
         print("Turning off, please wait.")
         sleep(2.0)
