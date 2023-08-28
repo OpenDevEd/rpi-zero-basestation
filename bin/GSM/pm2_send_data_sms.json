@@ -1,5 +1,5 @@
 {
-  "name": "send data via sms",
+  "name": "send-data-via-sms",
   "script": "send_data_sms.py",
   "instances": 1,
   "autorestart": false,
