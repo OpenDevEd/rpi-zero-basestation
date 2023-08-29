@@ -20,6 +20,15 @@ ping -I ppp0 -n google.com
 curl -v -4 --interface ppp0 https://google.com
 poff gsm.mm
 ```
+Or, in more detail:
+```
+sudo pon gsm.mm
+sleep 5
+ip a
+ping -I ppp0 -n google.com
+sudo curl -v -4 --interface ppp0 https://google.com
+sudo poff gsm.mm
+```
 
 It's helpful to explicitly use IPv4 for testing because IPv6 connections require more header data to be transferred.
 
