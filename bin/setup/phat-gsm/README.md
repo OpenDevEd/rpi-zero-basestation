@@ -23,7 +23,6 @@ poff gsm.mm
 Or, in more detail:
 ```
 sudo pon gsm.mm
-sudo pppd call gsm.mm
 sleep 5
 ip a
 ping -I ppp0 -n google.com
