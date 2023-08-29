@@ -21,16 +21,36 @@ curl -v -4 --interface ppp0 https://google.com
 poff gsm.mm
 ```
 Or, in more detail:
+Start by running
 ```
 sudo pon gsm.mm
-sleep 5
+```
+then wait for a bit. You can run `tail -n 0 -f /var/log/messages` to see whether the connection succeeds. For a successful connection, you'd see something like:
+```             
+Aug 29 22:40:40 <server> pppd[14249]: Serial connection established.
+Aug 29 22:40:40 <server> pppd[14249]: Using interface ppp0
+Aug 29 22:40:40 <server> pppd[14249]: Connect: ppp0 <--> /dev/ttySC0
+Aug 29 22:40:41 <server> pppd[14249]: PAP authentication succeeded
+Aug 29 22:40:42 <server> pppd[14249]: local  IP address x.x.x.x
+Aug 29 22:40:42 <server> pppd[14249]: remote IP address x.x.x.x
+Aug 29 22:40:42 <server> pppd[14249]: primary   DNS address x.x.x.x
+Aug 29 22:40:42 <server> pppd[14249]: secondary DNS address x.x.x.x
+```
+You can then run
+```
 ip a
+```
+to confirm and then run the above commands:
+```
 ping -I ppp0 -n google.com
 sudo curl -v -4 --interface ppp0 https://google.com
+```
+Note `curl` needs sudo to work with interface selection. Also, we use `-4`, to explicitly use IPv4 for testing because IPv6 connections require more header data to be transferred.
+
+Finally, to turn off:
+```
 sudo poff gsm.mm
 ```
-
-It's helpful to explicitly use IPv4 for testing because IPv6 connections require more header data to be transferred.
 
 As a side note, as we were trying to get the modem working, we tried this with kernel 5.4 (as opposed to the default kernel 6.x), but this had no impact on anything.
 
