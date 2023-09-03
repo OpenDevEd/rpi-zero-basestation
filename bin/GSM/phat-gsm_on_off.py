@@ -4,7 +4,15 @@ from time import sleep             # lets us have a delay
 import sys
 
 # Designer Systems phat-gsm
-# GPIO23 16 DIO Modem PWR_ONOFF 3.3V level  The PWR_ONOFF GPIO line can be used to control the modem power in applications where manual power on/off is not possible. Activating GPIO23 as a set output for > 1 second holds the modem power on/off line low allowing modem power-on or > 1.5 seconds for power-off. 
+
+# GPIO23 16 DIO Modem PWR_ONOFF 3.3V level  The PWR_ONOFF GPIO line can be used to control the modem power in applications where manual power on/off is not possible.
+# Activating GPIO23 as a set output for > 1 second holds the modem power on/off line low allowing modem power-on or > 1.5 seconds for power-off. 
+
+# status indicator
+# OFFPowered down
+# Flashing fastNot registered to a network
+# Flashing once every 3 secondsRegistered to a network
+# Flashing very fastGPRS session in-progress
 
 pin = 23
 
@@ -14,7 +22,8 @@ def onoff(turnon):
     GPIO.output(pin, 1)         # set GPIO23 to 1/GPIO.HIGH/True
     if turnon:
         print("Turning on, please wait.")
-        sleep(2.0)
+        print("The led should flash fast (not registered) and after a few seconds Flashing once every 3 seconds (registered to a network)")
+        sleep(1.0)
     else:
         print("Turning off, please wait.")
         sleep(2.0)

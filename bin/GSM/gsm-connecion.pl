@@ -19,12 +19,12 @@ GetOptions (
     "number=f" => \$number, 
     ) or die("Error in command line arguments\n");
 
-if ($hasargs == -1 || $help) {
-    print("Need arguments");
-    print "Sorry, no help.";
-    system("less","$0");
-    exit;
-};
+# if ($hasargs == -1 || $help) {
+#     print("Need arguments");
+#     print "Sorry, no help.";
+#     system("less","$0");
+#     exit;
+# };
 
 if ($ARGV[0] eq "on") {
        chdir("$home/rpi-zero-basestation/bin/GSM/");
@@ -40,7 +40,7 @@ if ($ARGV[0] eq "on") {
        my $status = "";
        while (<L>) {
 	   print;
-	   if (m/(chat\[\d+\]\: Failed|pppd\[\d+\]: Exit.|secondary DNS address)/) {
+	   if (m/(chat\[\d+\]\: Failed|pppd\[\d+\]: Exit.|secondary DNS address|IPCP\: timeout sending Config-Requests)/) {
 	       $status = $_;
 	       if ($1 eq "secondary DNS address") {
 		   $status = "success";
@@ -56,7 +56,7 @@ if ($ARGV[0] eq "on") {
 } elsif ($ARGV[0] eq "test") {
     say "Testing ping, please wait";
     system "ping -c 3 -I ppp0 -n google.com";
-    say "Testing https - must be run with sudo, please wait";
+    say "Testing https (running with sudo) - please wait";
     system "sudo curl -v -4 --interface ppp0 https://google.com";
 } else {
     say "Valid options: on off ip test";

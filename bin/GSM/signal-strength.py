@@ -37,6 +37,12 @@ text_message = ""
 
 signal_strength = check_signal(port, baud_rate)
 print(f"Signal Strength: {signal_strength} dBm")
+
+import sys
+if len(sys.argv)>1:
+    with open("signal_strength.txt","a") as f:
+        f.write(str(signal_strength) + " dBm: " + str(sys.argv[1])+ "\n")
+
 # phone_number = get_number(port, baud_rate)
 # print(f"Phone Number: {phone_number}")
 #result = send_sms(port, baud_rate, phone_number, text_message)

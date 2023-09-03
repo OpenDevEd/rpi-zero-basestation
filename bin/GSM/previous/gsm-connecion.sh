@@ -7,16 +7,16 @@ then
     ./phat-gsm_on_off.py on
     sleep 5
     sudo pon gsm.mm
-    sudo pppd call gsm.mm
+    #sudo pppd call gsm.mm
     sleep 5
-    ip a
+    ip a | grep ppp0
 elif [[ $1 = "off" ]]
 then
     sudo poff gsm.mm    
     ./phat-gsm_on_off.py off
 elif [[ $1 = "ip" ]]
 then
-    ip a
+    ip a | grep ppp0
 elif [[ $1 = "test" ]]
 then
     echo Testing ping, please wait
