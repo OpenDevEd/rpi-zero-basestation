@@ -21,8 +21,10 @@ The data logger hardware/software, based on Raspberry Pi Pico, is avaialble here
 * Designer Systems phat-gsm
 * Adafruit Lora Bonnet
 * PiJuice Zero
+
 Mounted on
 * Pimorono phat-stack
 * Custom laser-cut standoffs
 * Box
+
 ![img_0001](https://github.com/OpenDevEd/rpi-zero-basestation/assets/7574634/f319374e-5db9-4c39-ba89-731f04c87146)
